@@ -1,0 +1,19 @@
+<main class="d-flex flex-column align-items-center my-5">
+  <h2>Olá, {{ usuario.nome }}</h2>
+  <h5>Para facilitar nosso contato é necessário validar seu e-mail</h5>
+  <p>Insira seu e-mail no campo abaixo e clique em "Enviar Código"</p>
+  <form #formulario class="mb-3 col-md-3">
+    <label for="campo_email" class="form-label"><strong>E-mail</strong></label>
+    <input
+      #campoEmail
+      id="campo_email"
+      type="email"
+      class="form-control"
+      placeholder="usuario@email.com"
+      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+    />
+  </form>
+  <button (click)="enviarCodigo(campoEmail.value)" class="btn btn-primary my-2">
+    Enviar Código
+  </button>
+</main>

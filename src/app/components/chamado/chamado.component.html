@@ -1,0 +1,53 @@
+<main>
+  <h5
+    class="my-3 mx-3"
+    style="
+      color: #646569;
+      width: fit-content;
+      padding: 3px;
+      border-bottom: solid #b6a78a 1px;
+    "
+  >
+    NOVO CHAMADO
+  </h5>
+
+  <div class="w-50 mx-5">
+    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
+    <p><strong>E-Mail: </strong>{{ usuario.email }}</p>
+
+    <div class="mb-3 col-md-12">
+      <label for="campo_assunto" class="form-label">Assunto:</label>
+      <input #assunto id="campo_assunto" type="text" class="form-control" />
+    </div>
+
+    <div class="mb-3 col-md-12 d-flex flex-column">
+      <label for="campo_descricao" class="form-label">Descrição:</label>
+      <textarea
+        #descricao
+        id="campo_descricao"
+        class="form-control"
+        rows="5"
+      ></textarea>
+    </div>
+
+    <div class="mb-3 col-md-12">
+      <label for="campo_anexo" class="form-label">Anexar Arquivo:</label>
+      <input
+        #anexo
+        id="campo_anexo"
+        class="form-control"
+        type="file"
+        value="Escolher Arquivos"
+      />
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button
+        (click)="abrirChamado(assunto.value, descricao.value)"
+        class="btn btn-primary my-2 mx-3"
+      >
+        Abrir Chamado
+      </button>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,35 @@
+<main class="d-flex flex-column align-items-center my-5">
+  <h2>Olá, {{ usuario.nome }}</h2>
+  <p>Enviamos um e-mail para você com um código verificador.</p>
+  <p>
+    Encontre-o na sua caixa de entrada, digite-o neste campo abaixo e clique em
+    "Verificar código"
+  </p>
+  <div class="mb-3 col-md2">
+    <label for="campo_codigo" class="form-label"
+      ><strong>Código Verificador</strong>
+    </label>
+    <input
+      #codigo
+      id="campo_codigo"
+      type="email"
+      class="form-control"
+      placeholder=""
+    />
+  </div>
+  <button
+    *ngIf="!expirado"
+    (click)="verificarCodigo(codigo.value)"
+    class="btn btn-success my-2"
+  >
+    Verificar Código
+  </button>
+  <p *ngIf="invalido" class="text-danger">código incorreto</p>
+  <p *ngIf="expirado" class="text-danger">Tempo Expirado</p>
+  <button *ngIf="expirado" (click)="voltar()" class="btn btn-warning my-2">
+    Tentar Novamente
+  </button>
+  <div>
+    <p>{{ tempoRestante }} Segundos</p>
+  </div>
+</main>
