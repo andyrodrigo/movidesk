@@ -3,11 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { ValidacaoComponent } from './components/validacao/validacao.component';
 import { ChamadoComponent } from './components/chamado/chamado.component';
+import { Guarda } from './guards/guarda';
 
 const routes: Routes = [
   { path: '', component: WelcomeComponent },
-  { path: 'validacao', component: ValidacaoComponent },
-  { path: 'chamado', component: ChamadoComponent },
+  { path: 'validacao', component: ValidacaoComponent, canActivate: [Guarda] },
+  { path: 'chamado', component: ChamadoComponent, canActivate: [Guarda] },
 ];
 
 @NgModule({
