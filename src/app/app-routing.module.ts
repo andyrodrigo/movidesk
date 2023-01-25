@@ -7,6 +7,7 @@ import { Guarda } from './guards/guarda';
 
 const routes: Routes = [
   { path: '', component: WelcomeComponent },
+  //{ path: ':tk', component: WelcomeComponent },
   { path: 'validacao', component: ValidacaoComponent, canActivate: [Guarda] },
   { path: 'chamado', component: ChamadoComponent, canActivate: [Guarda] },
 ];
