@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ValidacaoService } from 'src/app/services/validacao.service';
 import { CriptoService } from 'src/app/services/cripto.service';
+import { ValidacaoService } from 'src/app/services/validacao.service';
 
 @Component({
   selector: 'app-validacao',
@@ -46,7 +46,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
 
   protected verificarCodigo(codigo: string): void {
     let codigoGravado = sessionStorage.getItem('codigoGravado');
-    const codigoCriptado = `"${this.criptoService.codificarMD5(codigo)}"`;
+    const codigoCriptado = `"${this.criptoService.encriptarMD5(codigo)}"`;
     // console.log('codigoGravado: ' + codigoGravado);
     // console.log('codigoCriptado: ' + codigoCriptado);
     if (codigoGravado === codigoCriptado.toString() && !this.expirado) {
