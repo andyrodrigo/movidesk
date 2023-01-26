@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { config } from '../config/config';
-import { Usuario } from '../models/usuario';
+import { IUsuario } from '../models/usuario';
 
 @Injectable({
   providedIn: 'root',
@@ -11,15 +11,19 @@ import { Usuario } from '../models/usuario';
 export class ValidacaoService {
   private readonly API_URL = `${config['apiUrl']}`;
 
-  private usuarioBehavior = new BehaviorSubject<Usuario>({
+  usuario: IUsuario = {
     nome: 'Alírio',
     cpf: '111.654.987-14',
-    cnpj: 'cnpj',
-    orgao: 'orgao',
     sistema: 'sistema',
     email: 'nome@email.com',
     telefone: '6969-6969',
-  });
+    orgao: {
+      nome: 'Orgao Teste',
+      cnpj: '76.632.628/0001-71',
+    },
+  };
+
+  private usuarioBehavior = new BehaviorSubject<IUsuario>(this.usuario);
 
   constructor(private httpClient: HttpClient) {}
 
@@ -42,7 +46,7 @@ export class ValidacaoService {
     return this.usuarioBehavior;
   }
 
-  escreverUsuario(usuario: Usuario): void {
+  escreverUsuario(usuario: IUsuario): void {
     this.usuarioBehavior.next(usuario);
   }
 }
