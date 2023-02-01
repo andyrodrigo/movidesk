@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IUsuario } from './../../models/usuario';
+import { IUsuario } from '../../models/usuario.model';
 
 @Component({
   selector: 'top-home',

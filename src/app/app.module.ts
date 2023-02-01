@@ -10,6 +10,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { ValidacaoComponent } from './components/validacao/validacao.component';
 import { ChamadoComponent } from './components/chamado/chamado.component';
+import { SucessoComponent } from './components/sucesso/sucesso.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { ChamadoComponent } from './components/chamado/chamado.component';
     WelcomeComponent,
     ValidacaoComponent,
     ChamadoComponent,
+    SucessoComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],

@@ -53,7 +53,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
       this.invalido = false;
       clearInterval(this.intervalo);
       sessionStorage.clear();
-      this.router.navigate(['/chamado']);
+      this.router.navigate(['/sucesso']);
     } else {
       this.invalido = true;
     }

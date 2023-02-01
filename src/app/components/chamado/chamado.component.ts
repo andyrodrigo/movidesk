@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { ValidacaoService } from 'src/app/services/validacao.service';
 
 @Component({
@@ -19,5 +20,20 @@ export class ChamadoComponent implements OnInit {
 
   protected abrirChamado(assunto: string, descricao: string) {
     alert('ok');
+  }
+
+  //----teste
+  extra: boolean = false;
+  resposta: any[] = [];
+
+  testar() {
+    this.extra = !this.extra;
+  }
+
+  buscar(entrada: string) {
+    this.validacaoService.consultarCpfCnpj(entrada).subscribe((valor: any) => {
+      this.resposta = valor.body;
+      console.log(this.resposta);
+    });
   }
 }

@@ -51,3 +51,30 @@
     </div>
   </div>
 </main>
+
+<section class="m-5">
+  <button class="btn btn-secondary my-5" (click)="testar()">comunicação</button>
+  <div *ngIf="extra" class="card">
+    <div class="card-body">
+      <div>
+        <label for="cpf">CPF ou CNPJ</label>
+        <input #entrada id="cpf" type="text" class="form-control w-25" />
+        <div class="card m-2">
+          <div *ngFor="let item of resposta">
+            Nome: {{ item.businessName }} - CPF: {{ item.cpfCnpj }} - Orgão:
+            {{ item.relationships[0].name }} - E-mail:
+            {{ item.emails[0]?.email }}
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-warning my-2" (click)="buscar(entrada.value)">
+        Buscar
+      </button>
+      <p>59671165400</p>
+      <p>09590270417</p>
+      <p>10604993471</p>
+      <p>03506119478</p>
+      <p>09450611459</p>
+    </div>
+  </div>
+</section>
