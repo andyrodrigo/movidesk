@@ -28,20 +28,22 @@ export class WelcomeComponent implements OnInit {
     sessionStorage.clear();
     this.activatedRoute.queryParams.subscribe((params) => {
       this.token = params['tk'];
+      console.log('token recebido: ' + this.token);
       const descriptografado = this.criptoService.decriptarAES(this.token);
+      console.log('descriptografado: ' + descriptografado);
       const tokenObject = JSON.parse(descriptografado);
+      console.log(tokenObject);
+
       this.validacaoService.consultarUsuario().subscribe((valor: any) => {
         this.usuario = {
-          nome: tokenObject.nome,
-          cpf: tokenObject.cpf,
-          sistema: tokenObject.sistema,
-          email: tokenObject.email,
-          telefone: tokenObject.telefone,
-          orgao: tokenObject.orgao,
+          nome: tokenObject.usuario.nome,
+          cpf: tokenObject.usuario.cpf,
+          sistema: tokenObject.sistema.nome,
+          email: tokenObject.usuario.email,
+          telefone: tokenObject.usuario.telefone,
+          orgao: tokenObject.orgao.nome,
         };
-        this.emailFornecido = tokenObject.email;
-        console.log('token recebido: ' + this.token);
-        console.log('decriptografado: ' + descriptografado);
+        this.emailFornecido = tokenObject.usuario.email;
         console.log(
           'user: ' +
             this.usuario.nome +
@@ -55,7 +57,31 @@ export class WelcomeComponent implements OnInit {
   }
 
   teste() {
-    alert(this.usuario.telefone);
+    const jason = {
+      datetime: '26/01/2023 14:06:12',
+      orgao: {
+        idMovidesk: 'XXXXXXXXXXXXXX',
+        cnpj: 'XX.XXX.XXX/XXXX-XX',
+        nome: 'Prefeitura Municipal de Parnamirim',
+      },
+      usuario: {
+        idMovidesk: 'YYYYYYYYYYY',
+        cpf: 'YYY.YYY.YYY-YY',
+        nome: 'Laura Paiva',
+        telefone: '(84) 96969-6969',
+        email: 'laurinha@yahoo.com.br',
+      },
+      sistema: {
+        nome: 'RH',
+        modulo: 'Processamento da Folha',
+      },
+    };
+    const json = JSON.stringify(jason);
+    console.log(json);
+    const cripto = this.criptoService.encriptarAES(json);
+    console.log(cripto);
+    const decripto = this.criptoService.decriptarAES(cripto);
+    console.log(decripto);
   }
 
   protected enviarCodigo(): void {

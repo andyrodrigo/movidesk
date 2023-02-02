@@ -35,10 +35,18 @@ export class ValidacaoService {
     });
   }
 
-  consultarCpfCnpj(entrada: string): Observable<any> {
-    let url = `${this.API_URL}/buscar/'${entrada}'`;
+  filtrar(filtro: string, entrada: string): Observable<any> {
+    let url = `${this.API_URL}/buscar/${filtro}/'${entrada}'`;
     console.log(url);
-    return this.httpClient.get(url, {
+    return this.httpClient.get<any>(url, {
+      observe: 'response',
+    });
+  }
+
+  cadastrarUsuario(usuario: any): Observable<any> {
+    let url = `${this.API_URL}/cadastrar`;
+    console.log(url);
+    return this.httpClient.post<any>(url, usuario, {
       observe: 'response',
     });
   }
