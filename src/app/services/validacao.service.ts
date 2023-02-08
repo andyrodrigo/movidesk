@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { config } from '../config/config';
-import { IUsuario } from '../models/usuario';
+import { IUsuario } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,10 +27,26 @@ export class ValidacaoService {
 
   constructor(private httpClient: HttpClient) {}
 
-  enviarEmail(email: string, codigo: number): Observable<any> {
-    let url = `${this.API_URL}/enviar-email/${email}/${codigo}`;
+  enviarEmail(mensagem: any): Observable<any> {
+    let url = `${this.API_URL}/enviar-email`;
     console.log(url);
-    return this.httpClient.post(url, {
+    return this.httpClient.post(url, mensagem, {
+      observe: 'response',
+    });
+  }
+
+  filtrar(filtro: string, entrada: string): Observable<any> {
+    let url = `${this.API_URL}/buscar/${filtro}/'${entrada}'`;
+    console.log(url);
+    return this.httpClient.get<any>(url, {
+      observe: 'response',
+    });
+  }
+
+  cadastrarUsuario(usuario: any): Observable<any> {
+    let url = `${this.API_URL}/cadastrar`;
+    console.log(url);
+    return this.httpClient.post<any>(url, usuario, {
       observe: 'response',
     });
   }

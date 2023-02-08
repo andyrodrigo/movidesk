@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { ValidacaoService } from 'src/app/services/validacao.service';
 
 @Component({
@@ -19,5 +20,69 @@ export class ChamadoComponent implements OnInit {
 
   protected abrirChamado(assunto: string, descricao: string) {
     alert('ok');
+  }
+
+  //----teste
+  extra: boolean = false;
+  resposta: any[] = [];
+  user: any = {
+    isActive: true,
+    personType: 1,
+    profileType: 2,
+    businessName: 'Teste3 da API Movidesk',
+    cpfCnpj: '52511345099',
+    classification: 'TESTE-PREFEITURA',
+    cultureId: 'pt-BR',
+    timeZoneId: 'America/Recife',
+    observations: 'Cadastro de teste da API, desconsiderar.',
+    contacts: [
+      {
+        contactType: 'Telefone Inexistente',
+        contact: '(69) 6969-6969',
+        isDefault: true,
+      },
+    ],
+    emails: [
+      {
+        emailType: 'Inexistente',
+        email: 'testeapi@teste.com',
+        isDefault: true,
+      },
+    ],
+    relationships: [
+      {
+        id: '08085409000160',
+        name: 'PREFEITURA MUNICIPAL DE ANGICOS',
+        forceChildrenToHaveSomeAgreement: false,
+      },
+    ],
+  };
+
+  testar() {
+    this.extra = !this.extra;
+  }
+
+  buscar(entrada: string) {
+    this.validacaoService
+      .filtrar('cpfCnpj', entrada)
+      .subscribe((valor: any) => {
+        this.resposta = valor.body;
+        console.log(this.resposta);
+      });
+  }
+
+  cadastrar() {
+    const usuario = JSON.stringify(this.user);
+    console.log('objeto: ');
+    console.log(this.user);
+    console.log('tipo: ');
+    console.log(typeof this.user);
+    console.log('usuario: ');
+    console.log(usuario);
+    console.log('tipo: ');
+    console.log(typeof usuario);
+    this.validacaoService
+      .cadastrarUsuario(this.user)
+      .subscribe({ complete: () => {} });
   }
 }

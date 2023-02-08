@@ -4,5 +4,5 @@ interface Config {
 
 // Session auth needs to use the same origin anyway
 export const config: Config = {
-  apiUrl: 'http://localhost:8081',
+  apiUrl: 'http://localhost:5000',
 };

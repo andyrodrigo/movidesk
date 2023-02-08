@@ -1,4 +1,4 @@
-<main>
+<main style="width: 600px">
   <h5
     class="my-3 mx-3"
     style="
@@ -11,43 +11,97 @@
     NOVO CHAMADO
   </h5>
 
-  <div class="w-50 mx-5">
-    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
-    <p><strong>E-Mail: </strong>{{ usuario.email }}</p>
+  <div class="mx-5">
+    <div>
+      <div class="d-flex">
+        <p class="col-md-6"><strong>Nome:</strong> {{ usuario.nome }}</p>
+        <p class="col-md-6">
+          <strong>CPF:</strong>
+          {{ usuario.cpf }}
+        </p>
+      </div>
+      <div class="d-flex">
+        <p class="col-md-6"><strong>E-Mail: </strong>{{ usuario.email }}</p>
+        <p class="col-md-6">
+          <strong>Telefone: </strong>{{ usuario.telefone }}
+        </p>
+      </div>
 
-    <div class="mb-3 col-md-12">
-      <label for="campo_assunto" class="form-label">Assunto:</label>
-      <input #assunto id="campo_assunto" type="text" class="form-control" />
+      <div class="d-flex">
+        <p class="col-md-6"><strong>Órgão: </strong>{{ usuario.orgao.nome }}</p>
+        <p class="col-md-6"><strong>Sistema: </strong>{{ usuario.sistema }}</p>
+      </div>
     </div>
 
-    <div class="mb-3 col-md-12 d-flex flex-column">
-      <label for="campo_descricao" class="form-label">Descrição:</label>
-      <textarea
-        #descricao
-        id="campo_descricao"
-        class="form-control"
-        rows="5"
-      ></textarea>
-    </div>
+    <section>
+      <div class="mb-3 col-md-12">
+        <label for="campo_assunto" class="form-label">Assunto:</label>
+        <input #assunto id="campo_assunto" type="text" class="form-control" />
+      </div>
 
-    <div class="mb-3 col-md-12">
-      <label for="campo_anexo" class="form-label">Anexar Arquivo:</label>
-      <input
-        #anexo
-        id="campo_anexo"
-        class="form-control"
-        type="file"
-        value="Escolher Arquivos"
-      />
-    </div>
+      <div class="mb-3 col-md-12 d-flex flex-column">
+        <label for="campo_descricao" class="form-label"
+          >Descrição do Problema:</label
+        >
+        <textarea
+          #descricao
+          id="campo_descricao"
+          class="form-control"
+          rows="5"
+        ></textarea>
+      </div>
 
-    <div class="d-flex justify-content-end">
-      <button
-        (click)="abrirChamado(assunto.value, descricao.value)"
-        class="btn btn-primary my-2 mx-3"
-      >
-        Abrir Chamado
+      <div class="mb-3 col-md-12">
+        <label for="campo_anexo" class="form-label">Anexar Arquivo:</label>
+        <input
+          #anexo
+          id="campo_anexo"
+          class="form-control"
+          type="file"
+          value="Escolher Arquivos"
+        />
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button
+          (click)="abrirChamado(assunto.value, descricao.value)"
+          class="btn btn-primary my-2 mx-3"
+        >
+          Abrir Chamado
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<section class="m-5">
+  <button class="btn btn-secondary my-5" (click)="testar()">comunicação</button>
+  <div *ngIf="extra" class="card">
+    <div class="card-body">
+      <div>
+        <label for="cpf">CPF ou CNPJ</label>
+        <input #entrada id="cpf" type="text" class="form-control w-25" />
+        <div class="card m-2">
+          <div *ngFor="let item of resposta">
+            Nome: {{ item.businessName }} - CPF: {{ item.cpfCnpj }} - Orgão:
+            {{ item.relationships[0].name }} - E-mail:
+            {{ item.emails[0]?.email }}
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-warning my-2" (click)="buscar(entrada.value)">
+        Buscar
+      </button>
+      <p>66729624507</p>
+      <p>52511345099</p>
+      <p>59671165400</p>
+      <p>09590270417</p>
+      <p>10604993471</p>
+      <p>03506119478</p>
+      <p>09450611459</p>
+      <button class="btn btn-danger my-2" (click)="cadastrar()">
+        Cadastrar
       </button>
     </div>
   </div>
-</main>
+</section>
