@@ -27,10 +27,10 @@ export class ValidacaoService {
 
   constructor(private httpClient: HttpClient) {}
 
-  enviarEmail(email: string, codigo: number): Observable<any> {
-    let url = `${this.API_URL}/enviar-email/${email}/${codigo}`;
+  enviarEmail(mensagem: any): Observable<any> {
+    let url = `${this.API_URL}/enviar-email`;
     console.log(url);
-    return this.httpClient.post(url, {
+    return this.httpClient.post(url, mensagem, {
       observe: 'response',
     });
   }

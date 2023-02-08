@@ -101,7 +101,6 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
       this.invalido = false;
       clearInterval(this.intervalo);
       sessionStorage.clear();
-      //const usuario = JSON.stringify(this.cadastro);
       this.validacaoService
         .cadastrarUsuario(this.cadastro)
         .subscribe({ complete: () => {} });

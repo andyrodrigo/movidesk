@@ -87,19 +87,21 @@ export class WelcomeComponent implements OnInit {
   protected enviarCodigo(): void {
     const autorizacao = this.autorizaService.autorizar('autorizado');
     if (autorizacao) {
+      const emailEnvio = this.emailFornecido;
       this.usuario.email = this.emailFornecido;
       this.validacaoService.escreverUsuario(this.usuario);
-
       const codigoGerado = this.numeroAleatorio(100000, 999999).toString();
       const codigoCriptado = this.criptoService.encriptarMD5(codigoGerado);
       sessionStorage.setItem('codigoGravado', JSON.stringify(codigoCriptado));
-
-      console.log('codigo gerado: ', codigoGerado);
-      // this.validacaoService
-      //   .enviarEmail(this.emailFornecido, Number(codigoGerado))
-      //   .subscribe(() => {
+      console.log(codigoGerado);
+      this.validacaoService;
+      // .enviarEmail({
+      //   email: emailEnvio,
+      //   codigo: Number(codigoGerado),
+      // })
+      // .subscribe(() => {
       this.router.navigate(['/validacao']);
-      //   });
+      // });
     }
   }
 
