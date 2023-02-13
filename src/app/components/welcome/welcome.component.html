@@ -12,14 +12,10 @@
       [(ngModel)]="emailFornecido"
       class="form-control is-invalid"
       [class.is-invalid]="!formulario.valid && formulario.touched"
-      [class.is-valid]="formulario.valid"
       placeholder="usuario@email.com"
       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
       required
     />
-    <div *ngIf="formulario.touched" class="valid-feedback">
-      E-mail no formato adequado
-    </div>
     <div class="invalid-feedback">E-mail é invalido</div>
   </form>
   <button
@@ -31,4 +27,5 @@
   </button>
 </main>
 <!--
-<button (click)="teste()">teste</button>-->
+<button (click)="teste()">teste</button>
+-->

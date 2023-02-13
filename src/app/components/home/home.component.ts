@@ -10,12 +10,11 @@ export class HomeComponent implements OnInit {
     nome: 'Alírio',
     cpf: '111.654.987-14',
     sistema: 'sistema',
+    codigo: 454545,
+    cnpj: '76.632.628/0001-71',
     email: 'nome@email.com',
     telefone: '6969-6969',
-    orgao: {
-      nome: 'Orgao Teste',
-      cnpj: '76.632.628/0001-71',
-    },
+    orgao: 'Orgao Teste',
   };
 
   constructor() {}
