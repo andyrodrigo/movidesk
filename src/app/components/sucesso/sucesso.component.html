@@ -5,7 +5,9 @@
     Nós enviamos uma <strong>senha temporária</strong> para seu
     <strong>e-mail</strong> para utilização do movidesk.
   </p>
-  <p>Seu nome de usuário é: <strong>????</strong></p>
+  <p>
+    Seu nome de usuário é: <strong>{{ this.usuario.cpf }}</strong>
+  </p>
 
   <button (click)="iniciar()" class="btn btn-primary my-5">
     Iniciar um Chamado
