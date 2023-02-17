@@ -4,6 +4,7 @@ import { VirtualTimeScheduler } from 'rxjs';
 
 import { CriptoService } from 'src/app/services/cripto.service';
 import { ValidacaoService } from 'src/app/services/validacao.service';
+import { IEmail, Email } from 'src/app/models/email.model';
 
 @Component({
   selector: 'app-validacao',
@@ -17,12 +18,15 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
   invalido: boolean;
   expirado: boolean;
   listaOrgaos: any[] = [];
+  respostaUsuario: any[] = [];
+  listaEmpresas: any[] = [];
   idOrgao: string = '';
 
   cadastroUsuario: any = {};
   cadastroEmpresa: any = {};
   empresaExiste: boolean = false;
-  emailMensagem: any;
+  usuarioExiste: boolean = false;
+  emailMensagem: IEmail = new Email();
   assunto: string = 'e-mail validado';
 
   constructor(
@@ -41,7 +45,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     this.timer();
     this.validacaoService.consultarUsuario().subscribe((valor: any) => {
       this.usuario = valor;
-      this.preencherCadastros();
+      this.buscarEmpresa();
     });
   }
 
@@ -54,23 +58,40 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  protected preencherCadastros() {
+  private buscarEmpresa() {
     this.validacaoService
       .filtrar('id', this.usuario.cnpj)
       .subscribe((valor: any) => {
         this.listaOrgaos = valor.body;
-        // console.log(this.listaOrgaos);
-        this.criarCadastroUsuario();
+        console.log('vindo da api:');
+        console.log(valor.body);
         if (this.listaOrgaos.length === 0) {
-          //console.log('Empresa não cadastrada');
           this.criarCadastroEmpresa();
         } else {
           this.empresaExiste = true;
         }
+        this.buscarUsuario();
       });
   }
 
-  protected criarCadastroEmpresa() {
+  private buscarUsuario() {
+    this.validacaoService
+      .filtrar('id', this.usuario.cpf)
+      .subscribe((valor: any) => {
+        this.respostaUsuario = valor.body;
+        if (this.respostaUsuario.length === 0) {
+          this.criarCadastroUsuario();
+        } else {
+          this.usuarioExiste = true;
+          console.log('listinha:');
+          this.listaEmpresas = valor.body[0].relationships;
+          console.log(valor.body[0].relationships);
+          this.atualizarInformacoes();
+        }
+      });
+  }
+
+  private criarCadastroEmpresa() {
     this.cadastroEmpresa = {
       id: this.usuario.cnpj,
       isActive: true,
@@ -86,7 +107,9 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     console.log(this.cadastroEmpresa);
   }
 
-  protected criarCadastroUsuario() {
+  private criarCadastroUsuario() {
+    this.associarEmpresa();
+
     this.cadastroUsuario = {
       id: this.usuario.cpf,
       isActive: true,
@@ -114,22 +137,63 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           isDefault: true,
         },
       ],
-      relationships: [
-        {
-          id: this.usuario.cnpj,
-          forceChildrenToHaveSomeAgreement: false,
-        },
-      ],
+      relationships: this.listaEmpresas,
     };
     console.log(this.cadastroUsuario);
   }
 
+  private atualizarInformacoes() {
+    this.associarEmpresa();
+
+    this.cadastroUsuario = {
+      businessName: this.usuario.nome,
+      contacts: [
+        {
+          contactType: 'Telefone Inexistente',
+          contact: this.usuario.telefone,
+          isDefault: true,
+        },
+      ],
+      emails: [
+        {
+          emailType: 'Inexistente',
+          email: this.usuario.email,
+          isDefault: true,
+        },
+      ],
+      relationships: this.listaEmpresas,
+    };
+    console.log(this.cadastroUsuario);
+  }
+
+  associarEmpresa() {
+    let nova = true;
+    const empresa = {
+      id: this.usuario.cnpj,
+      forceChildrenToHaveSomeAgreement: false,
+    };
+
+    for (let i = 0; i < this.listaEmpresas.length; i++) {
+      console.log('Uma: ' + this.listaEmpresas[i].id);
+      if (this.listaEmpresas[i].id == this.usuario.cnpj) {
+        nova = false;
+        break;
+      }
+    }
+    if (nova) {
+      this.listaEmpresas.push(empresa);
+    }
+    console.log(this.listaEmpresas);
+  }
+
   protected verificarCodigo(codigo: string): void {
-    this.montarEmail(
-      this.cadastroUsuario.userName,
-      this.cadastroUsuario.password,
-      this.usuario.email
-    );
+    if (!this.usuarioExiste) {
+      this.montarEmail(
+        this.cadastroUsuario.userName,
+        this.cadastroUsuario.password,
+        this.usuario.email
+      );
+    }
     let codigoGravado = sessionStorage.getItem('codigoGravado');
     const codigoCriptado = `"${this.criptoService.encriptarMD5(codigo)}"`;
     if (codigoGravado === codigoCriptado.toString() && !this.expirado) {
@@ -137,7 +201,11 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
       clearInterval(this.intervalo);
       sessionStorage.clear();
       if (this.empresaExiste) {
-        this.cadastrarUsuario();
+        if (this.usuarioExiste) {
+          this.atualizarUsuario();
+        } else {
+          this.cadastrarUsuario();
+        }
       } else {
         this.cadastrarEmpresa();
       }
@@ -147,7 +215,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
   }
 
   montarEmail(usuario: string, senha: string, email: string) {
-    const mensagem = `<body style='font-family: Arial, Helvetica, sans-serif;'> <main style='width: 400px'> <div style='display: flex; justify-content: center'> <h1>Você foi cadastrado com sucesso</h1> </div> <p style='font-size: large; display: flex; justify-content: center'> Estes são seu usuário e sua senha para acessar os acampanhamentos dos seus chamados. Você pode mudar sua senha depois, se quiser. </p> <div style='display: flex justify-content: center'> <h1>Usuario: ${usuario}   Senha: ${senha} /h1> </div> <p style='font-size: medium; display: flex; justify-content: center'> Se você não solicitou este e-mail, não se preocupe. Você pode ignorá-lo.</p> </main> </body>`;
+    const mensagem = `<body style='font-family: Arial, Helvetica, sans-serif;'> <main style='width: 400px'> <div style='display: flex; justify-content: center'> <h1>Você foi cadastrado com sucesso</h1> </div> <p style='font-size: large; display: flex; justify-content: center'> Estes são seu usuário e sua senha para acessar os acampanhamentos dos seus chamados. Você pode mudar sua senha depois, se quiser. </p> <div style='display: flex justify-content: center'> <h1>Usuario: ${usuario}   Senha: ${senha} </h1> </div> <p style='font-size: medium; display: flex; justify-content: center'> Se você não solicitou este e-mail, não se preocupe. Você pode ignorá-lo.</p> </main> </body>`;
     this.emailMensagem = {
       email: email,
       assunto: this.assunto,
@@ -169,7 +237,11 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
         } else {
           console.log(resposta);
-          this.cadastrarUsuario();
+          if (this.usuarioExiste) {
+            this.atualizarUsuario();
+          } else {
+            this.cadastrarUsuario();
+          }
         }
       },
       error: (erro) => {
@@ -192,13 +264,30 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
         } else {
           console.log(resposta);
-          this.validacaoService.enviarEmail('nome e senha');
-          this.router.navigate(['/sucesso']);
+          this.enviarEmail();
         }
       },
       error: (erro) => {
         console.log(erro);
       },
+    });
+  }
+
+  private atualizarUsuario() {
+    let resposta: any;
+    this.validacaoService
+      .atualizarUsuario(this.cadastroUsuario, this.usuario.cpf)
+      .subscribe({
+        error: (erro) => {
+          console.log(erro);
+        },
+      });
+    this.enviarEmail();
+  }
+
+  private enviarEmail() {
+    this.validacaoService.enviarEmail(this.emailMensagem).subscribe(() => {
+      this.router.navigate(['/sucesso']);
     });
   }
 

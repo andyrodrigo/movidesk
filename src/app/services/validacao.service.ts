@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 import { config } from '../config/config';
 import { IUsuario } from '../models/usuario.model';
+import { IEmail } from '../models/email.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ export class ValidacaoService {
 
   constructor(private httpClient: HttpClient) {}
 
-  enviarEmail(mensagem: any): Observable<any> {
+  enviarEmail(mensagem: IEmail): Observable<any> {
     let url = `${this.API_URL}/enviar-email`;
     console.log(url);
     return this.httpClient.post(url, mensagem, {
@@ -45,6 +46,14 @@ export class ValidacaoService {
     let url = `${this.API_URL}/cadastrar`;
     console.log(url);
     return this.httpClient.post<any>(url, usuario, {
+      observe: 'response',
+    });
+  }
+
+  atualizarUsuario(usuario: any, id: string): Observable<any> {
+    let url = `${this.API_URL}/relacionar/${id}`;
+    console.log(url);
+    return this.httpClient.patch<any>(url, usuario, {
       observe: 'response',
     });
   }

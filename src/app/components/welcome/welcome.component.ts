@@ -5,6 +5,7 @@ import { CriptoService } from 'src/app/services/cripto.service';
 import { ValidacaoService } from 'src/app/services/validacao.service';
 import { AutorizaService } from 'src/app/services/autoriza.service';
 import { IUsuario, Usuario } from 'src/app/models/usuario.model';
+import { IEmail, Email } from 'src/app/models/email.model';
 
 @Component({
   selector: 'top-welcome',
@@ -13,8 +14,8 @@ import { IUsuario, Usuario } from 'src/app/models/usuario.model';
 })
 export class WelcomeComponent implements OnInit {
   usuario: IUsuario = new Usuario();
+  emailMensagem: IEmail = new Email();
   emailFornecido: string = '';
-  emailMensagem: any;
   assunto: string = 'Confirmação de endereço de e-mail';
   token: any;
 
@@ -28,6 +29,10 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit(): void {
     sessionStorage.clear();
+    this.decriptarTokenRecebido();
+  }
+
+  private decriptarTokenRecebido() {
     this.activatedRoute.queryParams.subscribe((params) => {
       if (params['tk']) {
         this.token = params['tk'];
@@ -52,11 +57,11 @@ export class WelcomeComponent implements OnInit {
           //console.log(this.usuario);
         });
       } else {
-        console.log('no user');
+        //console.log('no user');
         this.validacaoService.consultarUsuario().subscribe((valor: any) => {
           this.usuario = valor;
         });
-        console.log(this.usuario);
+        //console.log(this.usuario);
       }
     });
   }

@@ -11,7 +11,7 @@ export class ChamadoComponent implements OnInit {
   usuario: any = {};
   assunto: string = '';
   descricao: string = '';
-  arquivo: string = '';
+  anexo: string = '';
   ticket: any = {};
   numeroTicket: string = 'NUMERO';
   enviado = false;
@@ -26,27 +26,35 @@ export class ChamadoComponent implements OnInit {
   }
 
   protected abrirChamado() {
+    this.enviado = true;
     this.ticket = {
       type: 2,
       subject: this.assunto,
       serviceFirstLevelId: this.usuario.codigo,
-      createdBy: { id: this.usuario.cpf },
-      clients: [{ id: this.usuario.cnpj }],
+      createdBy: { id: this.usuario.cnpj },
+      clients: [{ id: this.usuario.cpf }],
       actions: [{ type: 2, description: `<p>${this.descricao}<p>` }],
     };
     console.log(this.ticket);
-    this.enviado = true;
     this.validacaoService.abrirChamado(this.ticket).subscribe({
       next: (resposta) => {
         console.log(resposta);
         this.numeroTicket = resposta.body.id;
+        if (this.anexo) {
+          this.enviarAnexo();
+        } else {
+          console.log('vazio');
+        }
         this.sucesso = true;
       },
-      complete: () => {},
       error: (erro) => {
         console.log(erro);
       },
     });
+  }
+
+  private enviarAnexo() {
+    console.log(this.anexo);
   }
 
   //----teste
