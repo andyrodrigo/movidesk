@@ -1,7 +1,7 @@
 <main class="d-flex flex-column align-items-center my-5">
   <h2>Parabéns, {{ usuario.nome }}</h2>
   <h5 class="text-success my-5">Seu e-mail foi validado com sucesso!!</h5>
-  <p>
+  <p *ngIf="!existe">
     Nós enviamos uma <strong>senha temporária</strong> para seu
     <strong>e-mail</strong> para utilização do movidesk.
   </p>

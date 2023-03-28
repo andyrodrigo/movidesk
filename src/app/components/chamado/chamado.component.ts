@@ -11,6 +11,7 @@ export class ChamadoComponent implements OnInit {
   usuario: any = {};
   assunto: string = '';
   descricao: string = '';
+  anexoFile!: File;
   anexo: string = '';
   ticket: any = {};
   numeroTicket: string = 'NUMERO';
@@ -53,8 +54,23 @@ export class ChamadoComponent implements OnInit {
     });
   }
 
-  private enviarAnexo() {
-    console.log(this.anexo);
+  onAnexoSelecionado(evento: any) {
+    this.anexoFile = evento.target.files[0];
+  }
+
+  protected enviarAnexo() {
+    if (this.anexo != '') {
+      this.validacaoService.enviarAnexo(this.anexoFile, this.numeroTicket ).subscribe({
+        next: (resposta) => {
+          console.log(resposta);
+        },
+        error: (erro) => {
+          console.log(erro);
+        }
+      });
+    } else {
+      alert('Nenhum Anexo foi selecionado');
+    }
   }
 
   //----teste

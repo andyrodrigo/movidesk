@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { VirtualTimeScheduler } from 'rxjs';
 
 import { CriptoService } from 'src/app/services/cripto.service';
 import { ValidacaoService } from 'src/app/services/validacao.service';
+import { DataService } from 'src/app/services/data.service';
 import { IEmail, Email } from 'src/app/models/email.model';
 
 @Component({
@@ -20,6 +20,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
   listaOrgaos: any[] = [];
   respostaUsuario: any[] = [];
   listaEmpresas: any[] = [];
+  listaEmails: any[] = [];
   idOrgao: string = '';
 
   cadastroUsuario: any = {};
@@ -32,7 +33,8 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private validacaoService: ValidacaoService,
-    private criptoService: CriptoService
+    private criptoService: CriptoService,
+    private dataService: DataService
   ) {
     this.invalido = true;
     this.expirado = true;
@@ -85,6 +87,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           this.usuarioExiste = true;
           console.log('listinha:');
           this.listaEmpresas = valor.body[0].relationships;
+          this.listaEmails = valor.body[0].emails;
           console.log(valor.body[0].relationships);
           this.atualizarInformacoes();
         }
@@ -144,6 +147,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
 
   private atualizarInformacoes() {
     this.associarEmpresa();
+    this.inserirNovoEmail();
 
     this.cadastroUsuario = {
       businessName: this.usuario.nome,
@@ -154,13 +158,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           isDefault: true,
         },
       ],
-      emails: [
-        {
-          emailType: 'Inexistente',
-          email: this.usuario.email,
-          isDefault: true,
-        },
-      ],
+      emails: this.listaEmails,
       relationships: this.listaEmpresas,
     };
     console.log(this.cadastroUsuario);
@@ -174,7 +172,7 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     };
 
     for (let i = 0; i < this.listaEmpresas.length; i++) {
-      console.log('Uma: ' + this.listaEmpresas[i].id);
+      //console.log('Uma: ' + this.listaEmpresas[i].id);
       if (this.listaEmpresas[i].id == this.usuario.cnpj) {
         nova = false;
         break;
@@ -184,6 +182,32 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
       this.listaEmpresas.push(empresa);
     }
     console.log(this.listaEmpresas);
+  }
+
+  inserirNovoEmail() {
+    let novo = true;
+    let nomelido = false;
+    const mail = {
+      emailType: 'Inexistente',
+      email: this.usuario.email,
+      isDefault: true,
+    };
+    for (let i = 0; i < this.listaEmails.length; i++) {
+      //console.log('Um: ' + this.listaEmails[i].email);
+      if (this.listaEmails[i].email == this.usuario.email) {
+        if (!nomelido) {
+          this.listaEmails[i].isDefault = true;
+        }
+        nomelido = true;
+        novo = false;
+      } else {
+        this.listaEmails[i].isDefault = false;
+      }
+    }
+    if (novo) {
+      this.listaEmails.push(mail);
+    }
+    console.log(this.listaEmails);
   }
 
   protected verificarCodigo(codigo: string): void {
@@ -282,11 +306,13 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
           console.log(erro);
         },
       });
-    this.enviarEmail();
+    this.dataService.guardarObjeto(this.usuarioExiste);
+    this.router.navigate(['/sucesso']);
   }
 
   private enviarEmail() {
     this.validacaoService.enviarEmail(this.emailMensagem).subscribe(() => {
+      this.dataService.guardarObjeto(this.usuarioExiste);
       this.router.navigate(['/sucesso']);
     });
   }

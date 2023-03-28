@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 
 import { config } from '../config/config';
 import { IUsuario } from '../models/usuario.model';
@@ -27,11 +27,12 @@ export class ValidacaoService {
   constructor(private httpClient: HttpClient) {}
 
   enviarEmail(mensagem: IEmail): Observable<any> {
-    let url = `${this.API_URL}/enviar-email`;
-    console.log(url);
-    return this.httpClient.post(url, mensagem, {
-      observe: 'response',
-    });
+    return of('enviado email');
+    // let url = `${this.API_URL}/enviar-email`;
+    // console.log(url);
+    // return this.httpClient.post(url, mensagem, {
+    //   observe: 'response',
+    // });
   }
 
   filtrar(filtro: string, entrada: string): Observable<any> {
@@ -64,6 +65,26 @@ export class ValidacaoService {
     return this.httpClient.post<any>(url, chamado, {
       observe: 'response',
     });
+  }
+
+  enviarAnexo(anexo: File, id: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('arquivo', anexo, anexo.name);
+
+    let url = `https://api.movidesk.com/public/v1/ticketFileUpload?token=08ac164a-4952-4840-b1d6-8364410ee110&id=433&actionId=${id}`;
+    console.log('url: ', url);
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+    return this.httpClient.post<any>(url, formData, {
+      observe: 'response',
+    });
+
+    // let url = `${this.API_URL}/enviar-anexo`;
+    // const headers = new HttpHeaders();
+    // headers.append('Content-Type', 'multipart/form-data');
+    // return this.httpClient.post<any>(url, formData, {
+    //   observe: 'response',
+    // });
   }
 
   teste(): Observable<any> {
