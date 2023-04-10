@@ -1,20 +1,21 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-//import { Observable } from 'rxjs';
 
+import { CriptoService } from 'src/app/services/cripto.service';
 import { ValidacaoService } from 'src/app/services/validacao.service';
 import { AutorizaService } from 'src/app/services/autoriza.service';
-import { CriptoService } from 'src/app/services/cripto.service';
+import { IPessoa, Pessoa } from 'src/app/models/pessoa.model';
+import { IEmailRequest } from 'src/app/models/emailRequest';
 
 @Component({
   selector: 'top-welcome',
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
 })
-export class WelcomeComponent implements OnInit, OnDestroy {
-  usuario: any;
+export class WelcomeComponent implements OnInit {
+  pessoa: IPessoa = new Pessoa();
   emailFornecido: string = '';
-  token: any;
+  enviado = false;
 
   constructor(
     private router: Router,
@@ -26,73 +27,87 @@ export class WelcomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     sessionStorage.clear();
-    this.validacaoService.consultarUsuario().subscribe((valor: any) => {
-      this.usuario = valor;
+    this.activatedRoute.queryParams.subscribe((params) => {
+      if (params['tk']) {
+        const token = params['tk'];
+        this.decriptarTokenRecebido(token);
+      } else {
+        this.montarObjetoPessoa(true);
+      }
     });
-
-    const token = 'Andy';
-    console.log('usuario: ', token);
-    const _criptToByte = this.criptoService.Aes_EncryptString_ToBytes(token);
-    console.log('_criptToByte : ', _criptToByte);
-    const base64 = this.criptoService.Aes_EncryptString_ToBase64String(
-      _criptToByte.toString()
-    );
-    console.log('base64 : ', base64);
-    const tk = this.criptoService.ConvertStringToHex(base64);
-    console.log('tk : ', tk);
-    const base = this.criptoService.ConvertHexToString(tk);
-    console.log('base : ', base);
-    const bt = this.criptoService.fromBase64String('Bm6xPhZ695Omcid6RPotMw==');
-    console.log('bt : ', bt);
-    const novo = this.criptoService.Aes_DecryptString_FromBase64String(
-      'Bm6xPhZ695Omcid6RPotMw=='
-    );
-    console.log('novo : ', novo);
-    const final = this.criptoService.Aes_DecryptString_FromBytes(_criptToByte);
-    console.log('final : ', final);
-    //_infoCliente = this.criptoService.
-    // this.activatedRoute.queryParams.subscribe((params) => {
-    //   const teste1 = '75322541';
-    //   console.log('teste1:', teste1);
-    //   const teste2 = this.criptoService.encrypt2(teste1);
-    //   console.log('teste2:', teste2);
-    //   const teste3 = this.criptoService.decrypt2(teste2);
-    //   console.log('teste3:', teste3);
-
-    //   // const teste5 = this.criptoService.hexToString(teste4);
-    //   // console.log('teste5:', teste5);
-    //   // // const teste6 = this.criptoService.decodificarBase64(teste5);
-    //   // // console.log('teste6:', teste6);
-    //   // // const teste7 = this.criptoService.decrypt(teste6);
-    //   // // console.log('teste7: saida', teste7);
-
-    //   // console.log(params);
-    //   // this.token = params['tk'];
-    //   // console.log(this.token);
-    //   // const hexToString = this.criptoService.hexToString(this.token);
-    //   // console.log('hexToString: ', hexToString);
-    //   // const decode64 = this.criptoService.decode64(hexToString);
-    //   // console.log('decode64: ', decode64);
-    //   // const decodeAes = this.criptoService.decrypt2(this.token);
-    //   // console.log('decodeAes: ', decodeAes);
-    // });
   }
 
-  ngOnDestroy(): void {}
+  private decriptarTokenRecebido(token: any): void {
+    const descriptografado = this.criptoService.decriptarAES(token);
+    const tokenObject = JSON.parse(descriptografado);
+    this.montarObjetoPessoa(false, tokenObject);
+  }
+
+  private montarObjetoPessoa(padrao: boolean, objeto?: any): void {
+    this.validacaoService.consultarPessoa().subscribe((resposta: any) => {
+      if (padrao) {
+        this.pessoa = resposta;
+      } else {
+        this.pessoa = {
+          url: objeto.url,
+          dtvalidacao: '',
+          sistema: {
+            modulo: objeto.sistema.modulo,
+            codigo: objeto.sistema.codigo,
+          },
+          orgao: {
+            nome: objeto.orgao.nome,
+            cnpj: objeto.orgao.cnpj,
+          },
+          usuario: {
+            nome: objeto.usuario.nome,
+            cpf: objeto.usuario.cpf,
+            telefone: objeto.usuario.telefone,
+            email: objeto.usuario.email,
+          },
+        };
+        this.emailFornecido = objeto.usuario.email;
+      }
+    });
+  }
 
   protected enviarCodigo(): void {
-    const autorizacao = this.autorizaService.autorizar('autorizado');
+    let autorizacao = false;
+    if (this.pessoa.usuario?.cpf != 'CPF') {
+      autorizacao = this.autorizaService.autorizar('autorizado');
+    }
     if (autorizacao) {
-      this.usuario.email = this.emailFornecido;
-      this.validacaoService.escreverUsuario(this.usuario);
+      const emailEnvio = this.emailFornecido;
+      this.pessoa = {
+        ...this.pessoa,
+        usuario: {
+          ...this.pessoa.usuario,
+          email: this.emailFornecido,
+        },
+      };
+      this.validacaoService.escreverPessoa(this.pessoa);
       const codigoGerado = this.numeroAleatorio(100000, 999999).toString();
-      const codigoCriptado = this.criptoService.codificarMD5(codigoGerado);
+      const codigoCriptado = this.criptoService.encriptarMD5(codigoGerado);
       sessionStorage.setItem('codigoGravado', JSON.stringify(codigoCriptado));
-      //console.log(codigoGerado);
-      this.validacaoService
-        .enviarEmail(this.emailFornecido, Number(codigoGerado))
-        .subscribe(() => {});
-      this.router.navigate(['/validacao']);
+
+      const request: IEmailRequest = {
+        nome: this.pessoa.usuario?.nome,
+        codigo: codigoGerado,
+        email: emailEnvio,
+      };
+
+      this.enviado = true;
+      this.validacaoService.enviarCodigoEmail(request).subscribe({
+        next: (resposta) => {
+          console.log('Resposta: ', resposta);
+          this.router.navigate(['/validacao']);
+          this.enviado = false;
+        },
+        error: (resposta) => {
+          console.log('Erro: ', resposta);
+          this.enviado = false;
+        },
+      });
     }
   }
 

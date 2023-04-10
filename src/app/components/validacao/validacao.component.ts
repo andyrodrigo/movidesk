@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ValidacaoService } from 'src/app/services/validacao.service';
 import { CriptoService } from 'src/app/services/cripto.service';
+import { ValidacaoService } from 'src/app/services/validacao.service';
+import { DataService } from 'src/app/services/data.service';
+import { IPessoa, Pessoa } from 'src/app/models/pessoa.model';
 
 @Component({
   selector: 'app-validacao',
@@ -10,16 +12,20 @@ import { CriptoService } from 'src/app/services/cripto.service';
   styleUrls: ['./validacao.component.scss'],
 })
 export class ValidacaoComponent implements OnInit, OnDestroy {
-  usuario: any = {};
+  pessoa: IPessoa = new Pessoa();
+
   tempoRestante: number;
   intervalo: any;
   invalido: boolean;
   expirado: boolean;
 
+  enviado: boolean = false;
+
   constructor(
     private router: Router,
     private validacaoService: ValidacaoService,
-    private criptoService: CriptoService
+    private criptoService: CriptoService,
+    private dataService: DataService
   ) {
     this.invalido = true;
     this.expirado = true;
@@ -30,8 +36,8 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     this.invalido = false;
     this.expirado = false;
     this.timer();
-    this.validacaoService.consultarUsuario().subscribe((valor: any) => {
-      this.usuario = valor;
+    this.validacaoService.consultarPessoa().subscribe((resposta: any) => {
+      this.pessoa = resposta;
     });
   }
 
@@ -40,28 +46,8 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
     sessionStorage.clear();
   }
 
-  protected voltar() {
-    this.router.navigate(['/']);
-  }
-
-  protected verificarCodigo(codigo: string): void {
-    let codigoGravado = sessionStorage.getItem('codigoGravado');
-    const codigoCriptado = `"${this.criptoService.codificarMD5(codigo)}"`;
-    // console.log('codigoGravado: ' + codigoGravado);
-    // console.log('codigoCriptado: ' + codigoCriptado);
-    if (codigoGravado === codigoCriptado.toString() && !this.expirado) {
-      this.invalido = false;
-      clearInterval(this.intervalo);
-      sessionStorage.clear();
-      this.router.navigate(['/chamado']);
-    } else {
-      this.invalido = true;
-    }
-  }
-
   private timer() {
     this.intervalo = setInterval(() => {
-      //console.log('sec');
       if (this.tempoRestante > 0) {
         this.tempoRestante--;
       } else {
@@ -70,5 +56,42 @@ export class ValidacaoComponent implements OnInit, OnDestroy {
         this.expirado = true;
       }
     }, 1000);
+  }
+
+  protected voltar() {
+    this.router.navigate(['/']);
+  }
+
+  protected verificarCodigo(codigo: string): void {
+    let codigoGravado = sessionStorage.getItem('codigoGravado');
+    const codigoCriptado = `"${this.criptoService.encriptarMD5(codigo)}"`;
+    if (codigoGravado === codigoCriptado.toString() && !this.expirado) {
+      this.invalido = false;
+      clearInterval(this.intervalo);
+      sessionStorage.clear();
+      this.enviarPessoa();
+    } else {
+      this.invalido = true;
+    }
+  }
+
+  private enviarPessoa(): void {
+    console.log('pessoa: ', this.pessoa);
+    this.enviado = true;
+    this.validacaoService.enviarPessoa(this.pessoa).subscribe({
+      next: (resposta) => {
+        console.log('Resposta: ', resposta);
+        const url = resposta.body.url;
+        this.dataService.guardarObjeto(url);
+        this.router.navigate(['/sucesso']);
+        this.enviado = false;
+      },
+      error: (resposta) => {
+        console.log('Erro: ', resposta);
+        alert('Houve um problema com a Validação, tente novamente!');
+        this.router.navigate(['/']);
+        this.enviado = false;
+      },
+    });
   }
 }
