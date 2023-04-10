@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 
 import { config } from '../config/config';
-import { IUsuario } from '../models/usuario.model';
-import { IEmail } from '../models/email.model';
+import { IPessoa } from '../models/pessoa.model';
+import { IEmailRequest } from '../models/emailRequest';
 
 @Injectable({
   providedIn: 'root',
@@ -12,51 +12,57 @@ import { IEmail } from '../models/email.model';
 export class ValidacaoService {
   private readonly API_URL = `${config['apiUrl']}`;
 
-  usuario: IUsuario = {
-    nome: 'Alírio',
-    cpf: '11111111111',
-    sistema: 'sistema',
-    cnpj: '76632628000171',
-    email: 'nome@email.com',
-    telefone: '6969-6969',
-    orgao: 'Orgao Teste',
+  pessoa: IPessoa = {
+    url: '',
+    sistema: {
+      modulo: 'RH',
+      codigo: 'COD',
+    },
+    orgao: {
+      nome: 'Orgao',
+      cnpj: 'cnpj',
+    },
+    usuario: {
+      nome: 'Alírio',
+      cpf: 'CPF',
+      telefone: 'TELEFONE',
+      email: '',
+    },
   };
 
-  private usuarioBehavior = new BehaviorSubject<IUsuario>(this.usuario);
+  private pessoaBehavior = new BehaviorSubject<IPessoa>(this.pessoa);
 
   constructor(private httpClient: HttpClient) {}
 
-  enviarEmail(mensagem: IEmail): Observable<any> {
-    return of('enviado email');
-    // let url = `${this.API_URL}/enviar-email`;
-    // console.log(url);
-    // return this.httpClient.post(url, mensagem, {
-    //   observe: 'response',
-    // });
+  public consultarPessoa(): any {
+    return this.pessoaBehavior;
   }
 
-  filtrar(filtro: string, entrada: string): Observable<any> {
-    let url = `${this.API_URL}/buscar/${filtro}/'${entrada}'`;
-    console.log(url);
-    return this.httpClient.get<any>(url, {
+  public escreverPessoa(pessoa: IPessoa): void {
+    this.pessoaBehavior.next(pessoa);
+  }
+
+  public enviarCodigoEmail(request: IEmailRequest): Observable<any> {
+    // return of(
+    //   `Codigo: ${request.codigo}/ Email: ${request.email}/ Nome: ${request.nome}`
+    // );
+    let url = `${this.API_URL}/api/email/enviar`;
+    return this.httpClient.post(url, request, {
       observe: 'response',
     });
   }
 
-  cadastrarUsuario(usuario: any): Observable<any> {
-    let url = `${this.API_URL}/cadastrar`;
-    console.log(url);
-    return this.httpClient.post<any>(url, usuario, {
+  public enviarPessoa(pessoa: IPessoa): Observable<any> {
+    let url = `${this.API_URL}/api/Usuario/Validar`;
+    return this.httpClient.post<any>(url, pessoa, {
       observe: 'response',
     });
-  }
 
-  atualizarUsuario(usuario: any, id: string): Observable<any> {
-    let url = `${this.API_URL}/relacionar/${id}`;
-    console.log(url);
-    return this.httpClient.patch<any>(url, usuario, {
-      observe: 'response',
-    });
+    // pessoa = {
+    //   ...pessoa,
+    //   url: 'https://andyrodrigo.github.io/Sign-Up_Page/inside/casamento.html',
+    // };
+    //return of(pessoa);
   }
 
   abrirChamado(chamado: any): Observable<any> {
@@ -71,7 +77,7 @@ export class ValidacaoService {
     const formData = new FormData();
     formData.append('arquivo', anexo, anexo.name);
 
-    let url = `https://api.movidesk.com/public/v1/ticketFileUpload?token=08ac164a-4952-4840-b1d6-8364410ee110&id=433&actionId=${id}`;
+    let url = `https://api.movidesk.com`;
     console.log('url: ', url);
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data');
@@ -85,20 +91,5 @@ export class ValidacaoService {
     // return this.httpClient.post<any>(url, formData, {
     //   observe: 'response',
     // });
-  }
-
-  teste(): Observable<any> {
-    console.log(`${this.API_URL}/teste`);
-    return this.httpClient.get<any>(`${this.API_URL}/teste`, {
-      observe: 'response',
-    });
-  }
-
-  consultarUsuario(): any {
-    return this.usuarioBehavior;
-  }
-
-  escreverUsuario(usuario: IUsuario): void {
-    this.usuarioBehavior.next(usuario);
   }
 }

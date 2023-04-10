@@ -1,15 +1,19 @@
 <main class="d-flex flex-column align-items-center my-5">
-  <h2>Parabéns, {{ usuario.nome }}</h2>
+  <h2>Parabéns</h2>
   <h5 class="text-success my-5">Seu e-mail foi validado com sucesso!!</h5>
-  <p *ngIf="!existe">
+  <p>Em instantes você será redirecionado para o serviço Movidesk</p>
+  <div>
+    <p>{{ tempoRestante }} Segundos</p>
+  </div>
+  <!-- <p *ngIf="!existe">
     Nós enviamos uma <strong>senha temporária</strong> para seu
     <strong>e-mail</strong> para utilização do movidesk.
-  </p>
-  <p>
+  </p> -->
+  <!-- <p>
     Seu nome de usuário é: <strong>{{ this.usuario.cpf }}</strong>
   </p>
 
   <button (click)="iniciar()" class="btn btn-primary my-5">
     Iniciar um Chamado
-  </button>
+  </button> -->
 </main>

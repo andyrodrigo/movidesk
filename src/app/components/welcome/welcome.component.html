@@ -1,7 +1,8 @@
-<main class="d-flex flex-column align-items-center my-5">
-  <h2>Olá, {{ usuario.nome }}</h2>
+<main *ngIf="!enviado" class="d-flex flex-column align-items-center my-5">
+  <h2>Olá, {{ pessoa.usuario?.nome }}</h2>
   <h5>Para facilitar nosso contato é necessário validar seu e-mail</h5>
   <p>Insira seu e-mail no campo abaixo e clique em "Enviar Código"</p>
+
   <form #formulario="ngForm" class="mb-3 col-md-3">
     <label for="campo_email" class="form-label"><strong>E-mail:</strong></label>
     <input
@@ -26,3 +27,8 @@
     Enviar Código
   </button>
 </main>
+
+<h1 *ngIf="enviado" class="d-flex flex-column align-items-center my-5">
+  <div class="bar my-3"></div>
+  Enviando...
+</h1>

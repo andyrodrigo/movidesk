@@ -21,9 +21,9 @@ export class ChamadoComponent implements OnInit {
   constructor(private validacaoService: ValidacaoService) {}
 
   ngOnInit(): void {
-    this.validacaoService.consultarUsuario().subscribe((valor: any) => {
-      this.usuario = valor;
-    });
+    // this.validacaoService.consultarUsuario().subscribe((valor: any) => {
+    //   this.usuario = valor;
+    // });
   }
 
   protected abrirChamado() {
@@ -60,14 +60,16 @@ export class ChamadoComponent implements OnInit {
 
   protected enviarAnexo() {
     if (this.anexo != '') {
-      this.validacaoService.enviarAnexo(this.anexoFile, this.numeroTicket ).subscribe({
-        next: (resposta) => {
-          console.log(resposta);
-        },
-        error: (erro) => {
-          console.log(erro);
-        }
-      });
+      this.validacaoService
+        .enviarAnexo(this.anexoFile, this.numeroTicket)
+        .subscribe({
+          next: (resposta) => {
+            console.log(resposta);
+          },
+          error: (erro) => {
+            console.log(erro);
+          },
+        });
     } else {
       alert('Nenhum Anexo foi selecionado');
     }

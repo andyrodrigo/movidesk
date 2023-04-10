@@ -16,7 +16,7 @@ export class SimulacaoComponent implements OnInit {
   telefone: string = '(84)96969-6969';
   email: string = 'laurinha@yahoo.com.br';
   modulo: string = 'Patrimônio';
-  codigo: number = 821352;
+  codigo: string = '821352';
   link: string = '';
 
   ngOnInit(): void {}
@@ -37,6 +37,7 @@ export class SimulacaoComponent implements OnInit {
         modulo: this.modulo,
         codigo: this.codigo,
       },
+      url: '',
     };
     const json = JSON.stringify(jason);
     console.log(json);

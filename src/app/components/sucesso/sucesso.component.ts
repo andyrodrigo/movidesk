@@ -10,8 +10,10 @@ import { DataService } from 'src/app/services/data.service';
   styleUrls: ['./sucesso.component.scss'],
 })
 export class SucessoComponent implements OnInit {
-  usuario: any = {};
+  url: string = '';
   existe = false;
+  tempoRestante: number = 10;
+  intervalo: any;
 
   constructor(
     private validacaoService: ValidacaoService,
@@ -20,14 +22,29 @@ export class SucessoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.existe = this.dataService.receberObjeto();
+    this.url = this.dataService.receberObjeto();
     this.dataService.limparObjeto();
-    this.validacaoService.consultarUsuario().subscribe((valor: any) => {
-      this.usuario = valor;
-    });
+    console.log('url: ', this.url);
+    this.timer();
   }
 
   iniciar() {
     this.router.navigate(['/chamado']);
+  }
+
+  private timer() {
+    this.intervalo = setInterval(() => {
+      if (this.tempoRestante > 0) {
+        this.tempoRestante--;
+      } else {
+        this.redirecionar();
+      }
+    }, 1000);
+  }
+
+  redirecionar(): void {
+    window.location.href = this.url;
+    //window.open(url, '_blank');
+    //window.close();
   }
 }
