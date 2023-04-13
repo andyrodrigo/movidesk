@@ -4,5 +4,6 @@ interface Config {
 
 // Session auth needs to use the same origin anyway
 export const config: Config = {
-  apiUrl: 'http://apimd.topdownrn.com.br',
+  apiUrl: 'https://apimd.topdownrn.com.br',
+  page: 'https://andyrodrigo.github.io/movidesk',
 };

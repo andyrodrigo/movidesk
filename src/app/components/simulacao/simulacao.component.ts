@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 import { CriptoService } from 'src/app/services/cripto.service';
+import { config } from 'src/app/config/config';
 
 @Component({
   selector: 'app-simulacao',
   templateUrl: './simulacao.component.html',
 })
 export class SimulacaoComponent implements OnInit {
+  private readonly pagina = `${config['page']}`;
+
   constructor(private criptoService: CriptoService) {}
 
   empresa: string = 'Prefeitura';
@@ -43,7 +46,9 @@ export class SimulacaoComponent implements OnInit {
     console.log(json);
     const cripto = this.criptoService.encriptarAES(json);
     console.log(cripto);
-    this.link = `http://localhost:4200/?tk=${cripto}`;
+
+    this.link = `${this.pagina}?tk=${cripto}`;
+
     window.open(
       this.link,
       '_blank',
